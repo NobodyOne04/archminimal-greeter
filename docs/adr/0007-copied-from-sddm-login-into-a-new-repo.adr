@@ -1,0 +1,21 @@
+# 0007. A new repo, archminimal-greeter, copied from sddm-login
+
+- Status: Accepted
+- Date: 2026-11-11
+
+The greeter moved from `sddm-login` (a misleading name: it never used SDDM) into a fresh repo,
+`archminimal-greeter`, copied at `b58cb01`, instead of renaming the old one.
+
+## Technical details
+- **Initial commit**: `Init archminimal-greeter: copy of sddm-login at b58cb01`; the old repo is
+  deleted, so its history is gone.
+- **Names**: matches the sibling repos (`archminimal-hypr`, `archminimal-setup`); every installed path
+  is `archminimal-greeter`.
+- **Private repo**, unlike its siblings.
+- **Setup**: because the history is unrelated, `archminimal-setup` does not treat it as a rename (no
+  `old_name`): it clones the new repo, and an old `~/projects/sddm-login` folder can be removed.
+- **Consequences**: ADR dates for the carried-over design come from the sibling repos.
+
+## Technologies and alternatives
+- Alternatives: renaming `sddm-login` on GitHub (as `hyprland` → `archminimal-hypr` was): would keep
+  history; why a copy was chosen wasn't recorded.

@@ -1,0 +1,32 @@
+# 0002. greetd + a Quickshell greeter in a greeter-only Hyprland; no SDDM
+
+- Status: Accepted
+- Date: 2026-11-05
+
+The login screen is greetd running a Quickshell (QML) greeter inside a minimal Hyprland that exists only
+for the login screen. Nothing uses or installs SDDM.
+
+## Technical details
+- **Chain**: greetd (root, VT 1, `system/greetd.toml`) → `/usr/local/bin/archminimal-greeter` as user
+  `greeter` → `start-hyprland -- --config /usr/share/archminimal-greeter/hyprland.lua` →
+  `qs -p /usr/share/archminimal-greeter` → on success greetd starts the chosen session.
+- **Greeter Hyprland** (`system/hyprland.lua`, 0.57+ Lua): no binds, no apps, no animations, blur or
+  shadows, no logo, splash, update news or donation prompts; `disable_watchdog_warning`. Starts `qs`
+  on `hyprland.start` and dispatches `hl.dsp.exit()` when it quits, so greetd can start the session.
+  `~/.config/hypr` is not involved.
+- **Greeter** (`greeter/`): `shell.qml` one overlay per monitor (or a window in `make preview`),
+  `Greeter.qml` screen + greetd flow, `Sessions.qml` Wayland sessions from
+  `/usr/share/wayland-sessions` (via `list-sessions.sh`), `LoginState.qml` last user/session,
+  `Config.qml` reads `/etc/archminimal-greeter/config.json`.
+- **Look**: one cyan accent, corner marks, logo glitch, faint scanlines, `sys::ready` cursor; the
+  desktop's lock screen copies it (`archminimal-hypr` ADR 0006).
+- **Sessions**: Wayland only; password logins only (a PAM setup asking a second question shows
+  `unsupported prompt`). Reboot / shutdown through `systemctl` (logind allows it for the active local
+  login screen), hidden with `showPower: false`.
+- **Consequences**: greetd itself is tiny (no Qt, no X server), but the screen needs Hyprland with 3D
+  (a VM needs GL acceleration); without it the safety net applies ([0003](0003-agreety-safety-net.adr)).
+
+## Technologies and alternatives
+- Involved: greetd, Hyprland 0.57+ (`start-hyprland`), Quickshell (`Quickshell.Services.Greetd`), Qt 6.
+- Alternatives: SDDM (archinstall's default): Qt + X11/Wayland stack and its own theme format; not
+  used anywhere here.

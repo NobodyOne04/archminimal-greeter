@@ -1,0 +1,20 @@
+# 0008. CI lints in an Arch container, including the greeter's Hyprland config
+
+- Status: Accepted
+- Date: 2026-11-11
+
+Every PR runs `make lint` in an Arch container, because a broken `system/hyprland.lua` means no login
+screen at boot and none of it can be checked on the Mac.
+
+## Technical details
+- **`make lint`**: `config/config.json` parses; shellcheck on the launcher, `display-manager.sh`,
+  `diagnose.sh`, `list-sessions.sh`; `Hyprland --verify-config --config system/hyprland.lua` (must
+  say `config ok`); qmllint from `/usr/lib/qt6/bin`, informational (mostly false "not found on type"
+  warnings for Quickshell singletons).
+- **CI**: GitHub Actions in `archlinux:base`, as a non-root user (Hyprland refuses root), same as
+  `archminimal-hypr` ADR 0010.
+- **Limits**: CI proves the files parse; anything in the login flow needs a real login on the VM
+  before merging.
+
+## Technologies and alternatives
+- Involved: GitHub Actions, archlinux:base, Hyprland, Quickshell, shellcheck.

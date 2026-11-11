@@ -1,0 +1,28 @@
+# 0004. Take over from any display manager, record it, give it back on revert
+
+- Status: Accepted
+- Date: 2026-11-05
+
+`make enable` disables whatever display manager is active (SDDM, GDM, LightDM, ly, …), records which,
+and enables greetd; `make revert` restores exactly what was recorded.
+
+## Technical details
+- **Install vs enable**: `sudo make install` only copies files; the login manager changes with
+  `sudo make enable`, from the next boot. Not restarted from inside a session.
+- **`system/display-manager.sh enable|revert|status`**: finds display managers both ways they
+  register: the `/etc/systemd/system/display-manager.service` alias and units wanted by a target
+  (`ly@ttyN`, `emptty`), filtered by a `KNOWN` regex. Disables them, writes them to
+  `/etc/archminimal-greeter/previous-display-manager`, enables `greetd.service` and checks greetd now
+  owns the alias.
+- **greetd config**: `/etc/greetd/config.toml` is replaced by `system/greetd.toml`; a previous one is
+  kept once as `config.toml.pre-archminimal-greeter` and restored on revert.
+- **Revert**: disables greetd and re-enables only what was recorded (if still installed); if nothing
+  was, the machine boots to a text login, never to SDDM.
+- **`make remove-sddm`**: uninstalls the sddm package, allowed only once greetd is the active display
+  manager.
+- **Consequences**: safe to run on an archinstall machine (its Hyprland profile installs SDDM) and to
+  undo.
+
+## Technologies and alternatives
+- Involved: systemd, pacman.
+- Alternatives: assuming SDDM: wrong on GDM/LightDM/ly machines and on revert.

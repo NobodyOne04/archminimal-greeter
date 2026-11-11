@@ -21,6 +21,7 @@ Formerly `sddm-login` (it never used SDDM). Installed system-wide on the Arch VM
 - `system/display-manager.sh`: enable / revert / status, records the replaced display manager.
 - `greeter/`: `shell.qml` entry, `Greeter.qml` screen + greetd flow, `Sessions.qml` session command,
   `LoginState.qml` last user/session, `Config.qml` reads `/etc/archminimal-greeter/config.json`.
+- `docs/adr/`: decision records (`NNNN-*.adr`, index `README.md`); read the one for a decision before changing it.
 
 ## Conventions
 - **Security is the point of this repo.** The password goes only to a hidden PAM prompt, is cleared after use

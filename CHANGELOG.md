@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Decision records in `docs/adr/`: eight ADRs for the repo's existing decisions
 - Copied from `NobodyOne04/sddm-login` at `b58cb01` under a name that matches what it is: a greetd + Quickshell greeter (no SDDM)
 - CI runs `make lint` on every PR, in an Arch container; `make lint` now also runs `Hyprland --verify-config`
   on the greeter's own `system/hyprland.lua`
