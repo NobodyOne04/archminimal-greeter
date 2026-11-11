@@ -1,0 +1,22 @@
+name: lint
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    # Arch: the same Hyprland (Lua config, 0.57+) and Quickshell the login screen runs
+    container: archlinux:base
+    steps:
+      - run: pacman -Syu --noconfirm --needed hyprland quickshell qt6-declarative shellcheck python make git
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      # Hyprland refuses to run as root (the container's user), so lint as a normal one;
+      # --verify-config also wants a runtime dir, even headless
+      - run: |
+          useradd -m ci
+          install -d -m 700 -o ci /tmp/xdg
+          chown -R ci "$GITHUB_WORKSPACE"
+          su ci -c 'cd "$GITHUB_WORKSPACE" && XDG_RUNTIME_DIR=/tmp/xdg make lint'

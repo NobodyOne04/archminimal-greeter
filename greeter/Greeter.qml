@@ -438,7 +438,10 @@ Item {
                     console.warn("archminimal: PAM:", message)
                 return
             }
-            if (root.passwordSent) {
+            // The password only ever answers a hidden prompt: a visible one (a username,
+            // a one-time code asked before the password) would get it typed into the
+            // wrong field. Such PAM setups aren't supported.
+            if (root.passwordSent || echoResponse) {
                 // A second prompt (e.g. a one-time code) is not supported.
                 root.cancelSession()
                 root.fail("unsupported prompt")

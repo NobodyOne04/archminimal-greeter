@@ -28,7 +28,17 @@ export QT_QPA_PLATFORM=wayland
 # Hyprland 0.53+ expects to be launched by its watchdog, start-hyprland
 # (it warns on screen otherwise). The watchdog restarts Hyprland only after a
 # crash; the clean exit after a successful login passes through to greetd.
+#
+# Not `exec`: wait for it. A clean exit (0) is the greeter quitting after a
+# login, so greetd starts the session. Anything else means Hyprland could not
+# run (no 3D in a VM, a crash after an update): fall back to agreety, instead
+# of greetd restarting a greeter that fails the same way every time.
 if command -v start-hyprland >/dev/null 2>&1; then
-    exec start-hyprland -- --config "$SHARE/hyprland.lua" >/dev/null 2>&1
+    start-hyprland -- --config "$SHARE/hyprland.lua" >/dev/null 2>&1
+else
+    Hyprland --config "$SHARE/hyprland.lua" >/dev/null 2>&1
 fi
-exec Hyprland --config "$SHARE/hyprland.lua" >/dev/null 2>&1
+rc=$?
+[ "$rc" -eq 0 ] && exit 0
+echo "archminimal-greeter: Hyprland exited with status $rc; using agreety" >&2
+exec agreety --cmd "${SHELL:-/bin/bash}"

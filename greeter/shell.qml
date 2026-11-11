@@ -1,5 +1,5 @@
 // Arch Minimal greeter for greetd, drawn by Quickshell inside a minimal
-// Hyprland instance (see ../system/hyprland.conf).
+// Hyprland instance (see ../system/hyprland.lua).
 //
 // Real mode (started by greetd, GREETD_SOCK is set): one full-screen overlay
 // per monitor; the login form lives on the primary monitor, the others show
