@@ -15,10 +15,11 @@ greetd  (tiny login daemon, root)
 - **Quickshell** draws the screen in QML.
 - **Hyprland** is only the compositor for the login screen, with its own minimal config; your `~/.config/hypr`
   is not touched.
-- **Safety net:** if Hyprland, Quickshell or the greeter files are missing, the launcher falls back to
-  `agreety`, greetd's text login, so a broken install never locks you out.
+- **Safety net:** if Hyprland, Quickshell or the greeter files are missing, or Hyprland exits with an error
+  (no 3D in a VM, a crash after an update), the launcher falls back to `agreety`, greetd's text login, so a
+  broken install never locks you out.
 
-> The repository is still called `sddm-login` for historical reasons; it contains no SDDM code.
+> This repository was called `sddm-login` until November 2026; it never contained SDDM code.
 
 ## 1. Install
 
@@ -108,13 +109,13 @@ hl.monitor({ output = "DP-1", mode = "2560x1440@144", position = "0x0", scale = 
 
 **You log in, but end up back at the login screen.** The desktop session started and died. Every session's
 output is saved to `~/.local/state/archminimal-session.log`. From `Ctrl+Alt+F2`, run
-`make -C ~/projects/sddm-login diagnose`: it collects the greetd log, that session log, Hyprland's log and crash
+`make -C ~/projects/archminimal-greeter diagnose`: it collects the greetd log, that session log, Hyprland's log and crash
 report, and checks your desktop config.
 
 **Black screen or the greeter keeps restarting.** `Ctrl+Alt+F2`, log in, then:
 
 ```bash
-cd ~/projects/sddm-login
+cd ~/projects/archminimal-greeter
 make status            # which display manager is active
 make logs              # greetd log of this boot
 sudo make revert       # back to the previous display manager (or a text login)
@@ -129,13 +130,15 @@ sudo sh -c 'tail -n 50 /run/user/$(id -u greeter)/hypr/*/hyprland.log'
 **In a virtual machine** Hyprland needs 3D acceleration (virtio-gpu with GL in QEMU/virt-manager, or 3D
 enabled in VMware/VirtualBox). Without it, the greeter cannot start and the safety net shows a text login.
 
-**Plain text login instead of the theme.** The safety net kicked in: `make check` shows what is missing.
+**Plain text login instead of the theme.** The safety net kicked in: Hyprland, Quickshell or the greeter
+files are missing (`make check` shows which), or Hyprland could not run (no 3D in a VM, a crash after an
+update; `sudo journalctl -b -u greetd` has the exit status).
 
 ## Makefile
 
 | Target | What |
 |---|---|
-| `make deps` / `check` / `lint` | install packages / verify them / static checks |
+| `make deps` / `check` / `lint` | install packages / verify them / static checks, incl. `Hyprland --verify-config` (CI runs `lint` on every PR) |
 | `make preview` | run the greeter in a window |
 | `sudo make install` / `uninstall` | install or remove files |
 | `sudo make enable` / `revert` | make greetd the login screen / undo |
@@ -150,7 +153,7 @@ greeter/
   shell.qml          entry point: one overlay per monitor, or a window in preview
   Greeter.qml        the screen + greetd login flow
   Config.qml         reads config.json
-  State.qml          remembers last user and session
+  LoginState.qml     remembers last user and session
   Sessions.qml       Wayland sessions, launch command and environment
   list-sessions.sh   parses /usr/share/wayland-sessions/*.desktop
   background.png
@@ -160,5 +163,6 @@ system/
   hyprland.lua          greeter-only Hyprland config
   greetd.toml           /etc/greetd/config.toml
   display-manager.sh    hands the login screen to greetd and back
+  diagnose.sh           `make diagnose`: every log about the last login
   tmpfiles.conf         creates /var/cache/archminimal-greeter
 ```

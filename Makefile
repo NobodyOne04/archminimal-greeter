@@ -49,12 +49,16 @@ check: ## Verify that everything the greeter needs is installed
 		|| { echo "  MISSING  no session in /usr/share/wayland-sessions"; ok=0; }; \
 	[ $$ok -eq 1 ] || { echo "fix the items above first"; exit 1; }
 
-lint: ## Static checks (JSON, shell, QML if the tools are installed)
+lint: ## Static checks: JSON, shell, the greeter's Hyprland config, QML (if the tools are installed)
 	@python3 -c 'import json; json.load(open("config/config.json"))' && echo "  ok  config/config.json"
 	@if command -v shellcheck >/dev/null; then shellcheck system/$(NAME) system/display-manager.sh system/diagnose.sh greeter/list-sessions.sh && echo "  ok  shellcheck"; \
 	else echo "  skip shellcheck (not installed)"; fi
-	@if command -v qmllint6 >/dev/null || command -v qmllint >/dev/null; then \
-		$$(command -v qmllint6 || command -v qmllint) greeter/*.qml || true; \
+	@# a broken system/hyprland.lua means no login screen at boot
+	@if command -v Hyprland >/dev/null; then Hyprland --verify-config --config system/hyprland.lua && echo "  ok  system/hyprland.lua"; \
+	else echo "  skip Hyprland --verify-config (not installed)"; fi
+	@# Arch keeps qmllint in /usr/lib/qt6/bin, which isn't on PATH
+	@q=$$(command -v qmllint6 || command -v qmllint || ls /usr/lib/qt6/bin/qmllint 2>/dev/null); \
+	if [ -n "$$q" ]; then $$q greeter/*.qml || true; echo "  ran qmllint (informational; warnings above, if any)"; \
 	else echo "  skip qmllint (not installed)"; fi
 
 preview: ## Open the greeter in a window (no login, no power actions; Esc quits)
@@ -111,7 +115,7 @@ remove-sddm: ## Uninstall SDDM once greetd is the login screen (sudo)
 	@if [ "$$(basename "$$(readlink /etc/systemd/system/display-manager.service 2>/dev/null)")" != greetd.service ]; then \
 		echo "error: greetd is not the active login screen yet; run 'sudo make enable' first"; exit 1; fi
 	@if pacman -Q sddm >/dev/null 2>&1; then pacman -Rns sddm; else echo "sddm is not installed"; fi
-	@rm -f /etc/archminimal-greeter/previous-display-manager
+	@rm -f $(ETC_DIR)/previous-display-manager
 
 status: ## Show the active display manager and greeter state
 	@sh system/display-manager.sh status
