@@ -1,0 +1,34 @@
+#!/bin/sh
+# Started by greetd (as the "greeter" user) to show the login screen:
+# a minimal Hyprland whose only client is the Quickshell greeter. When the
+# greeter quits (after a successful login), Hyprland exits and greetd starts
+# the chosen session.
+#
+# Safety net: if Hyprland or Quickshell is missing, fall back to agreety, the
+# text greeter shipped with greetd, so a broken install never locks you out.
+
+SHARE=/usr/share/archminimal-greeter
+ETC=/etc/archminimal-greeter
+STATE=/var/cache/archminimal-greeter
+
+if ! command -v Hyprland >/dev/null 2>&1 || ! command -v qs >/dev/null 2>&1 || [ ! -f "$SHARE/shell.qml" ]; then
+    echo "archminimal-greeter: Hyprland, quickshell or the greeter files are missing; using agreety" >&2
+    exec agreety --cmd "${SHELL:-/bin/bash}"
+fi
+
+# The greeter user has no writable home; keep caches in the state directory.
+export XDG_CACHE_HOME="$STATE/cache"
+export XDG_STATE_HOME="$STATE/state"
+export XDG_DATA_HOME="$STATE/data"
+export ARCHMINIMAL_CONFIG="$ETC/config.json"
+export ARCHMINIMAL_STATE_DIR="$STATE"
+export ARCHMINIMAL_SHARE="$SHARE"
+export QT_QPA_PLATFORM=wayland
+
+# Hyprland 0.53+ expects to be launched by its watchdog, start-hyprland
+# (it warns on screen otherwise). The watchdog restarts Hyprland only after a
+# crash; the clean exit after a successful login passes through to greetd.
+if command -v start-hyprland >/dev/null 2>&1; then
+    exec start-hyprland -- --config "$SHARE/hyprland.lua" >/dev/null 2>&1
+fi
+exec Hyprland --config "$SHARE/hyprland.lua" >/dev/null 2>&1

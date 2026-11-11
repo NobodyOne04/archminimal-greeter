@@ -1,0 +1,9 @@
+# /etc/greetd/config.toml — installed by `make enable` (the previous file is
+# backed up next to it).
+[terminal]
+# The VT greetd runs on.
+vt = 1
+
+[default_session]
+command = "/usr/local/bin/archminimal-greeter"
+user = "greeter"

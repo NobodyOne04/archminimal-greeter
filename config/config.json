@@ -1,0 +1,19 @@
+{
+  "background": "background.png",
+  "bgColor": "#28292d",
+  "fg": "#d0d2d0",
+  "mute": "#7d8088",
+  "accent": "#00e5ff",
+  "danger": "#ff2a6d",
+  "fontFamily": "JetBrains Mono",
+  "headerText": "ARCH//LINUX",
+  "rememberUser": true,
+  "defaultUser": "",
+  "showSession": false,
+  "defaultSession": "hyprland",
+  "showPower": true,
+  "glitch": true,
+  "scanlines": true,
+  "loginY": 0.70,
+  "primaryScreen": ""
+}
