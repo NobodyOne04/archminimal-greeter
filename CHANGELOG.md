@@ -8,6 +8,10 @@
   on the greeter's own `system/hyprland.lua`
 - `CLAUDE.md`: how to work on this repo with Claude Code
 
+### Changed
+- Sibling repos renamed: links and paths say `archminimal-setup` (was `linux_setup`) and `archminimal-hypr`
+  (was `hyprland`), incl. the hint in `make diagnose`
+
 ### Fixed
 - Safety net: when Hyprland is installed but can't run (no 3D in a VM, a crash after an update), the launcher
   now falls back to the text login instead of greetd restarting a broken greeter in a loop

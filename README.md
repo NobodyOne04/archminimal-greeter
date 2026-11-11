@@ -23,7 +23,7 @@ greetd  (tiny login daemon, root)
 
 ## 1. Install
 
-As part of the whole setup, [`linux_setup`](https://github.com/NobodyOne04/linux_setup)'s `make all` does all of
+As part of the whole setup, [`archminimal-setup`](https://github.com/NobodyOne04/archminimal-setup)'s `make all` does all of
 this. On its own:
 
 ```bash
