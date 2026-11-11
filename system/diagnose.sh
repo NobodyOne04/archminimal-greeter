@@ -48,7 +48,7 @@ ls -la "$HOME/.config/hypr/" 2>&1 | tail -n +2
 if [ -f "$HOME/.config/hypr/hyprland.lua" ]; then
     Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" 2>&1 | sed -n '/parsing result/,$p'
 else
-    echo "(no ~/.config/hypr/hyprland.lua: desktop repo not installed? cd ~/projects/hyprland && make install)"
+    echo "(no ~/.config/hypr/hyprland.lua: desktop repo not installed? cd ~/projects/archminimal-hypr && make install)"
 fi
 for c in start-hyprland Hyprland qs kitty hypridle; do
     printf '  %-15s %s\n' "$c" "$(command -v "$c" || echo MISSING)"

@@ -2,7 +2,7 @@
 
 The Arch login screen: greetd + a Quickshell greeter inside a greeter-only Hyprland, in the archminimal look.
 Formerly `sddm-login` (it never used SDDM). Installed system-wide on the Arch VM; the desktop's lock screen
-(`~/projects/hyprland`, `quickshell/LockScreen.qml`) copies this look. Install, config keys, troubleshooting:
+(`~/projects/archminimal-hypr`, `quickshell/LockScreen.qml`) copies this look. Install, config keys, troubleshooting:
 `README.md`.
 
 ## Commands
