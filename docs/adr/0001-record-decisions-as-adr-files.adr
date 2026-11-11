@@ -1,0 +1,28 @@
+# 0001. Record architecture decisions as .adr files
+
+- Status: Accepted
+- Date: 2026-11-11
+
+Decisions with long-term consequences for the login screen are recorded as numbered `.adr` files in
+`docs/adr/`, so the why is in one place instead of scattered through commits and the README.
+
+## Technical details
+- **Problem**: the reasons behind the greeter lived in commit messages, the README, `CLAUDE.md`
+  and comments in the launcher, `hyprland.lua` and the QML.
+- **Files**: `docs/adr/NNNN-short-title.adr`: sequential four-digit numbers, never reused; Markdown
+  content with the `.adr` extension so ADRs are told apart from other docs. `docs/adr/README.md` is
+  the index (number, title, status).
+- **Format**: the `adr-manager` template: title, `- Status:` and `- Date:` lines, a one-line purpose,
+  `## Technical details`, `## Technologies and alternatives`. Statuses: Proposed, Accepted, Rejected,
+  Deprecated, Superseded (linked both ways).
+- **History**: 0002-0008 were recorded retroactively from the code and history, dated by the commit
+  that made each decision (or, for the design carried over from `sddm-login`, the first commits in
+  the sibling repos that use it: that history went with the old repo). Alternatives not written down at the time are marked as such.
+- **Commits**: every subject carries the ADR it falls under (`[ADR-NNNN]`, minor changes
+  `[ADR-NNNN.N]`, `commit-style`). Same scheme as the `nvim` repo.
+- **Consequences**: one place, one format, a status showing whether a decision still holds. The
+  `nvim` config opens `.adr` files as markdown with a picker and status keys.
+
+## Technologies and alternatives
+- Alternatives: decisions in README sections: mixed with usage docs, no status or supersession;
+  `.md` extension: works everywhere, but ADRs can't be told apart.

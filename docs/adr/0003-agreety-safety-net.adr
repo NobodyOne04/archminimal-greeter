@@ -1,0 +1,27 @@
+# 0003. Safety net: fall back to a text login, never lock the user out
+
+- Status: Accepted
+- Date: 2026-11-11
+
+When the graphical greeter can't run, the launcher hands over to `agreety`, greetd's text login, so a
+broken install or update never leaves the machine without a way to log in.
+
+## Technical details
+- **Missing pieces**: if `Hyprland`, `qs` or `/usr/share/archminimal-greeter/shell.qml` is missing,
+  `system/archminimal-greeter` runs `exec agreety --cmd "${SHELL:-/bin/bash}"` at once.
+- **Hyprland that can't run** (2026-11-11): the launcher no longer `exec`s Hyprland; it waits for it.
+  Exit 0 is the greeter quitting after a login (greetd starts the session); any other status (no 3D
+  in a VM, a crash after an update) falls back to agreety, instead of greetd restarting a greeter that
+  fails the same way in a loop.
+- **Watchdog**: Hyprland 0.53+ is started through `start-hyprland` when present; it restarts only
+  after a crash, and a clean exit passes through.
+- **Testing**: launcher changes are tested with stub commands (a fake `start-hyprland` exiting 0 and
+  non-zero) before a real login on the VM.
+- **Recovery**: `Ctrl+Alt+F2`, then `make status`, `make logs`, `sudo make revert`; after a login that
+  bounces back, `make diagnose` collects greetd, session and Hyprland logs.
+- **Consequences**: a failure shows a plain text login instead of a black screen; the cause is in
+  `journalctl -b -u greetd`.
+
+## Technologies and alternatives
+- Involved: greetd's `agreety`.
+- Alternatives: letting greetd restart the greeter: loops forever on a Hyprland that can't run.

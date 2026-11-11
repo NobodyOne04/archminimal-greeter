@@ -1,0 +1,26 @@
+# 0006. Install layout: shipped files replaced, user settings never touched
+
+- Status: Accepted
+- Date: 2026-11-05
+
+Files the repo ships are replaced on every `make install`; the two files the user edits live in
+`/etc/archminimal-greeter` and are never overwritten.
+
+## Technical details
+- **Replaced on install**: `/usr/share/archminimal-greeter/` (QML, `list-sessions.sh`, wallpaper,
+  greeter-only `hyprland.lua`), `/usr/local/bin/archminimal-greeter`, the tmpfiles entry.
+- **Kept**: `/etc/archminimal-greeter/config.json` (installed only if missing; colours, header text,
+  remember user, default session, power buttons, glitch, scanlines, login position, primary screen)
+  and `/etc/archminimal-greeter/local.lua` (keyboard layout, monitors for the login screen), loaded
+  last by the greeter's `hyprland.lua` with `pcall(dofile, …)`; a real error is re-raised.
+- **Migration**: older versions copied `hyprland.lua` to `/etc` and never updated it; install moves it
+  to `hyprland.lua.unused`. Every installed path is named `archminimal-greeter`; renaming one needs a
+  migration in `make install`.
+- **Install check**: ends with `✓ installed` only if the new launcher and config are in place;
+  `make status` says `launcher: up to date` or `OUTDATED`.
+- **Preview**: `make preview` runs the greeter in a window with the repo's `config/config.json`
+  (no login, no power actions).
+- **Consequences**: `git pull && sudo make install` updates without losing settings.
+
+## Technologies and alternatives
+- Alternatives: config in `/usr/share`: lost on every update.
