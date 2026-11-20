@@ -202,6 +202,29 @@ Item {
             }
         }
 
+        // thin accent caret shared by both fields; blinks like the stock one (its parent is the field)
+        Component {
+            id: caret
+            Rectangle {
+                id: bar
+                width: 2; radius: 1
+                color: root.accent
+                visible: parent.activeFocus && parent.selectionStart === parent.selectionEnd
+                Connections {
+                    target: bar.parent
+                    function onCursorPositionChanged() { bar.opacity = 1; blink.restart() }
+                }
+                Timer {
+                    id: blink
+                    running: bar.parent ? bar.parent.activeFocus : false
+                    repeat: true
+                    interval: 530
+                    onTriggered: bar.opacity = bar.opacity ? 0 : 1
+                    onRunningChanged: bar.opacity = 1
+                }
+            }
+        }
+
         // username ("login")
         Item {
             width: parent.width; height: 30
@@ -223,12 +246,14 @@ Item {
                         color: userField.activeFocus ? root.accent : "transparent"
                     }
                 }
+                cursorDelegate: caret
                 KeyNavigation.tab: passField
                 onAccepted: { root.log("user field: Enter"); passField.forceActiveFocus() }
             }
             Text {
                 anchors.centerIn: parent
-                visible: userField.text.length === 0
+                // hidden while focused: the centered caret would blink through the middle of the word
+                visible: userField.text.length === 0 && !userField.activeFocus
                 text: "login"
                 color: root.mute
                 font { family: root.mono; pixelSize: 13; letterSpacing: 4; capitalization: Font.AllUppercase }
@@ -259,13 +284,15 @@ Item {
                         color: passField.activeFocus ? root.accent : "#4a4c54"
                     }
                 }
+                cursorDelegate: caret
                 KeyNavigation.backtab: userField
                 onAccepted: { root.log("password field: Enter"); root.doLogin() }
                 onTextChanged: root.failed = false
             }
             Text {
                 anchors.centerIn: parent
-                visible: passField.text.length === 0
+                // hidden while focused: the centered caret would blink through the middle of the word
+                visible: passField.text.length === 0 && !passField.activeFocus
                 text: "password"
                 color: root.mute
                 font { family: root.mono; pixelSize: 12; letterSpacing: 3 }

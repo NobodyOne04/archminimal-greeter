@@ -14,6 +14,7 @@
   (was `hyprland`), incl. the hint in `make diagnose`
 
 ### Fixed
+- Login and password cursor: a thin cyan caret that blinks, and the placeholder hides while the field is focused, so the cursor no longer blinks through the middle of the word
 - Safety net: when Hyprland is installed but can't run (no 3D in a VM, a crash after an update), the launcher
   now falls back to the text login instead of greetd restarting a broken greeter in a loop
 - The password only answers a hidden PAM prompt; a visible one (username, a code asked first) gets
