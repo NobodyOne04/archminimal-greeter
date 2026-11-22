@@ -17,8 +17,9 @@ else
 fi
 
 section "greeter log (/var/cache/archminimal-greeter/greeter.log)"
-# private to the greeter user (0700), so read it with sudo
-{ sudo cat /var/cache/archminimal-greeter/greeter.log 2>/dev/null || echo "(none yet)"; } | grep -vE "^[[:space:]]*$" | tail -n 30
+# private to the greeter user (0700): read it AS that user, not root, so a link
+# planted there can't pull a root-only file (e.g. /etc/shadow) into the report
+{ sudo -u greeter cat /var/cache/archminimal-greeter/greeter.log 2>/dev/null || echo "(none yet)"; } | grep -vE "^[[:space:]]*$" | tail -n 30
 
 section "greetd log (this boot)"
 journalctl -b -u greetd --no-pager 2>/dev/null | tail -n 25 ||

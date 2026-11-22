@@ -47,9 +47,12 @@ Singleton {
         const exec = s.exec.replace(/%[a-zA-Z%]/g, "").trim()
         // $1 = Exec line, $2 = session id. Only display-related env is logged.
         const script =
-            // the log holds the session's output and environment: private to the user,
-            // without changing the umask the session itself runs with
-            'log="$HOME/.local/state/archminimal-session.log"; mkdir -p "${log%/*}"; : >"$log"; chmod 600 "$log"; ' +
+            // the log holds the session's output and environment: private to the user from
+            // the moment it exists. mktemp creates it 0600 (a default ACL on the folder would
+            // override a umask), then it's renamed over the old log: no window, and the session
+            // keeps its own umask. Can't create it privately: log nowhere, still log in.
+            'log="$HOME/.local/state/archminimal-session.log"; mkdir -p "${log%/*}"; ' +
+            'tmp=$(mktemp "${log%/*}/.archminimal-session.XXXXXX") && chmod 600 "$tmp" && mv -f "$tmp" "$log" || { rm -f "$tmp"; log=/dev/null; }; ' +
             '{ echo "== $(date) session: $2"; echo "exec: $1"; ' +
             "env | grep -E '^(XDG_|WAYLAND|DISPLAY=|PATH=|HOME=|USER=|SHELL=|LANG=|DBUS_)' | sort; echo '=='; } >\"$log\" 2>&1; " +
             'eval "exec $1" >>"$log" 2>&1'

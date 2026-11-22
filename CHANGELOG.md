@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+- Security: `make diagnose` reads the greeter log as the `greeter` user, not root; the session log is created private (0600) from the start, and logging is skipped if that fails (Codex audit)
+
 ### Added
 - Decision records in `docs/adr/`: eight ADRs for the repo's existing decisions
 - Copied from `NobodyOne04/sddm-login` at `b58cb01` under a name that matches what it is: a greetd + Quickshell greeter (no SDDM)
