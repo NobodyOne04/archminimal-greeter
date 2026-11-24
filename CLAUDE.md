@@ -15,7 +15,8 @@ Formerly `sddm-login` (it never used SDDM). Installed system-wide on the Arch VM
 
 ## Layout
 - `system/archminimal-greeter`: launcher greetd runs as user `greeter`; starts Hyprland, falls back to
-  `agreety` (text login) when anything is missing or Hyprland exits non-zero.
+  `agreety` (text login) when anything is missing, Hyprland exits non-zero, or the greeter ended without
+  logging `launched: greetd accepted the session` (`greeter.log`; keep that text in `Greeter.qml`).
 - `system/hyprland.lua`: greeter-only Hyprland (no binds, no apps); starts `qs`, exits after login.
   `/etc/archminimal-greeter/local.lua` (machine tweaks) is loaded last.
 - `system/display-manager.sh`: enable / revert / status, records the replaced display manager.

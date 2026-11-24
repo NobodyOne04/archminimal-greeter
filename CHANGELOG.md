@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Fixed
+- A greeter that fails to load no longer loops: unless its log shows greetd accepted a session, the launcher falls back to `agreety` (Codex audit)
 - Security: `make diagnose` reads the greeter log as the `greeter` user, not root; the session log is created private (0600) from the start, and logging is skipped if that fails (Codex audit)
 
 ### Added

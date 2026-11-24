@@ -465,6 +465,7 @@ Item {
             Greetd.launch(Sessions.command(s), Sessions.environment(s), true)
         }
 
+        // system/archminimal-greeter greps for this exact line: keep the text
         function onLaunched() { root.log("launched: greetd accepted the session; quitting") }
 
         function onError(error) {
